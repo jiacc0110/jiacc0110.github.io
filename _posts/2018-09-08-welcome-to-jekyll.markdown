@@ -1,25 +1,13 @@
 ---
 layout: post
-title:  "Welcome to Jekyll!"
+title:  "关于博客"
 date:   2018-09-08 17:13:19 +0800
 categories: jekyll update
 ---
-You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.
-
-To add new posts, simply add a file in the `_posts` directory that follows the convention `YYYY-MM-DD-name-of-post.ext` and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.
-
-Jekyll also offers powerful support for code snippets:
-
-{% highlight ruby %}
-def print_hi(name)
-  puts "Hi, #{name}"
-end
-print_hi('Tom')
-#=> prints 'Hi, Tom' to STDOUT.
-{% endhighlight %}
-
-Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
-
-[jekyll-docs]: https://jekyllrb.com/docs/home
-[jekyll-gh]:   https://github.com/jekyll/jekyll
-[jekyll-talk]: https://talk.jekyllrb.com/
+##为什么要建这个博客。
+---
+  本人做Android开发三年有余，一直想要对这几年工作中的积累和业余时间的学习的内容有一个总结和梳理。
+  过去在csdn上断断续续写过一些文字，但是每过一段时间，再次看之前写的内容，都会觉得幼稚并且尴尬。不知道
+  是不是每个开发者都有这样的过程。一方面说明自己在不停的进步中，另一方面也说明过去知识储备的匮乏。在
+  这个时间节点，重新开始梳理各个知识点，希望自己能做好ヾ(◍°∇°◍)ﾉﾞ
+---
