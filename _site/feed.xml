@@ -1,9 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-09-08T19:09:29+08:00</updated><id>http://localhost:4000/</id><title type="html">贾川川的个人主页</title><subtitle>毕业于华南理工大学，曾在搜房网、竞技世界等公司从事Android开发工作， 目前就职于完美世界。</subtitle><entry><title type="html">关于博客</title><link href="http://localhost:4000/jekyll/update/2018/09/08/welcome-to-jekyll.html" rel="alternate" type="text/html" title="关于博客" /><published>2018-09-08T17:13:19+08:00</published><updated>2018-09-08T17:13:19+08:00</updated><id>http://localhost:4000/jekyll/update/2018/09/08/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2018/09/08/welcome-to-jekyll.html">&lt;h2 id=&quot;为什么要建这个博客&quot;&gt;为什么要建这个博客。&lt;/h2&gt;
-
-&lt;p&gt;本人做Android开发三年有余，一直想要对这几年工作中的积累和业余时间的学习的内容有一个总结和梳理。
-  过去在csdn上断断续续写过一些文字，但是每过一段时间，再次看之前写的内容，都会觉得幼稚并且尴尬。不知道
-  是不是每个开发者都有这样的过程。一方面说明自己在不停的进步中，另一方面也说明过去知识储备的匮乏。在
-  这个时间节点，重新开始梳理各个知识点，希望自己能做好ヾ(◍°∇°◍)ﾉﾞ&lt;/p&gt;</content><author><name></name></author><summary type="html">为什么要建这个博客。</summary></entry><entry><title type="html">Android数据持久化</title><link href="http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence.html" rel="alternate" type="text/html" title="Android数据持久化" /><published>2018-09-08T17:13:19+08:00</published><updated>2018-09-08T17:13:19+08:00</updated><id>http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence.html">&lt;h2 id=&quot;android的数据持久化&quot;&gt;Android的数据持久化&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-09-08T22:14:30+08:00</updated><id>http://localhost:4000/</id><title type="html">贾川川的个人主页</title><subtitle>毕业于华南理工大学，曾在搜房网、竞技世界等公司从事Android开发工作， 目前就职于完美世界。</subtitle><entry><title type="html">Android数据持久化</title><link href="http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence.html" rel="alternate" type="text/html" title="Android数据持久化" /><published>2018-09-08T19:13:19+08:00</published><updated>2018-09-08T19:13:19+08:00</updated><id>http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence.html">&lt;h2 id=&quot;android的数据持久化&quot;&gt;Android的数据持久化&lt;/h2&gt;
 &lt;p&gt;Android数据持久化是Android开发基础知识之一。包括几个方面。所谓数据持久化就是&lt;strong&gt;内存中数据模型转换为存储模型，以及存储模型转为内存数据的统称&lt;/strong&gt;。&lt;/p&gt;
 
 &lt;p&gt;Android数据持久化包括以下几个方面：&lt;/p&gt;
@@ -17,9 +12,74 @@
 &lt;p&gt;另外，网络上常有将ContentProvider作为数据持久化方式之一，但是ContentProvider作为夸进程交互的接口，并没有与存储介质交互，这里不做讨论。&lt;/p&gt;
 
 &lt;h3 id=&quot;sharedpreferances存储&quot;&gt;SharedPreferances存储&lt;/h3&gt;
+&lt;p&gt;SharedPreferances存储是一个轻量级的存储，可以存储键值对，用法非常简单就不说了。
+SharedPerferances的存储对应的是一个XML文件,此文件存储在内部存储器的专属文件夹下面。
+&lt;img src=&quot;http://localhost:4000/imgs/datapersistence/20180908213332.png&quot; alt=&quot;datapersistence&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;对应SharedPreferces的存储，需要先获得一个Editor实例，通过Eidtor将要提交的键值对加进去，最后使用&lt;strong&gt;commit()&lt;/strong&gt; 或者 &lt;strong&gt;apply()&lt;/strong&gt; 进行一个提交。&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;commit() 与 apply() 方法的选择需要注意一下，commit的提交是同步的，即将增加的键值对同步到XML文件后，返回一个true。这之中包括IO的读取操作，如果在主线程中容易造成卡顿。而apply()是将键值对同步到缓存的map中，然后开启工作线程同步到XML文件的一个异步操作。
+&lt;strong&gt;所以，在主线程中使用时，一定要使用apply()&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 
 &lt;h3 id=&quot;文件存储&quot;&gt;文件存储&lt;/h3&gt;
+&lt;p&gt;文件存储的关键，是分清楚&lt;strong&gt;内部存储&lt;/strong&gt;和&lt;strong&gt;外部存储&lt;/strong&gt;的物理概念，然后选择对应的api，获取io流或者文件夹进行文件操作。需要注意的是，内部存储一定是在手机机身之中，外部存储设备在早期的版本就是指SD卡，4.4以上的手机，外部存储设备可能是SD卡，也可能是内嵌在机身的外部存储设备。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;什么是APP专属文件？&amp;lt;/br&amp;gt;
+所谓专属文件就是它是属于某个具体的应用的，他的&lt;strong&gt;文件路径都带有相应的包名&lt;/strong&gt;，当APP卸载时，它们会随应用一起删除。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;我们在存储的时候，要根据需要选择不同的API，获取不同的文件夹实例。
+&lt;img src=&quot;http://localhost:4000/imgs/datapersistence/20180908215938.png&quot; alt=&quot;专属文件夹&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;内部存储保存位置一定是在专属文件夹下，外部存储不一定。对于一些多媒体文件例如相片等，是不应该跟同app一起删除的，这些文件要存在外部存储的共享文件夹下。api的使用可以参&lt;a href=&quot;https://developer.android.google.cn/guide/&quot;&gt;考官方文档&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;sqlite存储&quot;&gt;Sqlite存储&lt;/h3&gt;
+&lt;h4 id=&quot;1-sqlite基本用法&quot;&gt;1. Sqlite基本用法&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;创建SQLiteOpenHelper，onCreate()  第一次用数据库时执行，在里面创建表操作 ，onUpgrade()   数据库版本更新时执行，在里面进行升级。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;获取SQLiteDatabase数据库实例，进行增删改查的操作。可以使用封装好的增删改查方法，也可以使用SQL语句&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;h3 id=&quot;网络存储&quot;&gt;网络存储&lt;/h3&gt;</content><author><name></name></author><summary type="html">Android的数据持久化 Android数据持久化是Android开发基础知识之一。包括几个方面。所谓数据持久化就是内存中数据模型转换为存储模型，以及存储模型转为内存数据的统称。</summary></entry></feed>
+&lt;h4 id=&quot;2-room框架的使用&quot;&gt;2. Room框架的使用&lt;/h4&gt;
+&lt;p&gt;谷歌官方推荐使用Room框架代替SQLite。&lt;a href=&quot;https://developer.android.google.cn/training/data-storage/room/&quot;&gt;看这里&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/imgs/datapersistence/20180908220911.png&quot; alt=&quot;room框架&quot; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;基本用法：&lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;创建数据库类继承自RoomDatabase,用@dababase注解修饰；&lt;/li&gt;
+    &lt;li&gt;创建DAO数据访问对象接口，用@dao注解修饰；&lt;/li&gt;
+    &lt;li&gt;修改实体类，用@Entity注解修饰字段，并用对于注解修饰各个字段。&lt;/li&gt;
+    &lt;li&gt;根据业务调用&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;优势：对象关系映射（ORM）方便的完成数据库和实体类之间的转换，不需要写中间的实例化过程和SQL操作。只需要定义接口，注解处理器帮助我们完成实例化和赋值操作。&lt;/p&gt;
+
+&lt;p&gt;原理：在javac阶段 ，使用注解处理器（在Gradle中依赖的AnnotationProcessor），
+将我们自己写的接口类DAO、抽象类AppDatabase，自动生成DAO_IMPL、 AppDatabase_IMPL实现类,我们无需对Entity类做任何操作，省去了自己写SQL语句。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/imgs/datapersistence/20180908221309.png&quot; alt=&quot;room框架原理&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;网络存储&quot;&gt;网络存储&lt;/h3&gt;
+
+&lt;p&gt;常用的网络库 socket、
+    HttpURLConnection、
+    HttpClient(Android6.0开始弃用)、
+    Volley、
+    OkHttp、
+    native层的网络库&lt;/p&gt;
+
+&lt;p&gt;各个网络库的选择、使用、支持的功能、内部的原理，可以专门作为一个专题，  这里不做过多介绍。&lt;/p&gt;</content><author><name></name></author><summary type="html">Android的数据持久化 Android数据持久化是Android开发基础知识之一。包括几个方面。所谓数据持久化就是内存中数据模型转换为存储模型，以及存储模型转为内存数据的统称。</summary></entry><entry><title type="html">关于博客</title><link href="http://localhost:4000/jekyll/update/2018/09/08/welcome-to-jekyll.html" rel="alternate" type="text/html" title="关于博客" /><published>2018-09-08T17:13:19+08:00</published><updated>2018-09-08T17:13:19+08:00</updated><id>http://localhost:4000/jekyll/update/2018/09/08/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2018/09/08/welcome-to-jekyll.html">&lt;h2 id=&quot;为什么要建这个博客&quot;&gt;为什么要建这个博客。&lt;/h2&gt;
+
+&lt;p&gt;本人做Android开发三年有余，一直想要对这几年工作中的积累和业余时间的学习的内容有一个总结和梳理。
+  过去在csdn上断断续续写过一些文字，但是每过一段时间，再次看之前写的内容，都会觉得幼稚并且尴尬。不知道
+  是不是每个开发者都有这样的过程。一方面说明自己在不停的进步中，另一方面也说明过去知识储备的匮乏。在
+  这个时间节点，重新开始梳理各个知识点，希望自己能做好ヾ(◍°∇°◍)ﾉﾞ&lt;/p&gt;</content><author><name></name></author><summary type="html">为什么要建这个博客。</summary></entry></feed>
