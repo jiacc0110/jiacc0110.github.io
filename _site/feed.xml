@@ -1,4 +1,119 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-09-09T09:48:36+08:00</updated><id>http://localhost:4000/</id><title type="html">贾川川的个人主页</title><subtitle>毕业于华南理工大学，曾在搜房网、竞技世界等公司从事Android开发工作， 目前就职于完美世界。</subtitle><entry><title type="html">Android数据持久化</title><link href="http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence.html" rel="alternate" type="text/html" title="Android数据持久化" /><published>2018-09-08T19:13:19+08:00</published><updated>2018-09-08T19:13:19+08:00</updated><id>http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence.html">&lt;h2 id=&quot;android的数据持久化&quot;&gt;Android的数据持久化&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2018-09-14T00:38:04+08:00</updated><id>http://localhost:4000/</id><title type="html">贾川川的个人主页</title><subtitle>毕业于华南理工大学，曾在搜房网、竞技世界等公司从事Android开发工作， 目前就职于完美世界。</subtitle><entry><title type="html">常用设计模式的例子</title><link href="http://localhost:4000/jekyll/update/2018/09/14/Android-Design-patterns.html" rel="alternate" type="text/html" title="常用设计模式的例子" /><published>2018-09-14T00:13:19+08:00</published><updated>2018-09-14T00:13:19+08:00</updated><id>http://localhost:4000/jekyll/update/2018/09/14/Android-Design-patterns</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2018/09/14/Android-Design-patterns.html">&lt;h2 id=&quot;常用设计模式的例子&quot;&gt;常用设计模式的例子&lt;/h2&gt;
+&lt;h3 id=&quot;一单例模式&quot;&gt;一、单例模式&lt;/h3&gt;
+&lt;p&gt;单例模式有多种实现，这里使用的是双校验同步锁的方式。这种方式是为了线程安全，为了避免两个线程同时完成空判断而没有实例化，将判断和实例化加上同步锁作为一个原子操作。第一个空判断
+是为了防止每次都进入同步块，可大大提升效率。&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class Emperor{
+   private static Emperor instance;
+   private Emperor();
+   public static Emperor getInstance(){
+       if(instance == null){
+            Synchronized(Emperor.class){
+                if(instance == null){
+                     instance = new Emperor();
+                }
+            }
+        }    
+      return instance;
+  }   
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;二工厂方法模式&quot;&gt;二、工厂方法模式&lt;/h3&gt;
+
+&lt;h3 id=&quot;三工厂模式&quot;&gt;三、工厂模式&lt;/h3&gt;
+
+&lt;h3 id=&quot;四观察者模式&quot;&gt;四、观察者模式&lt;/h3&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class Observable{
+  private List&amp;lt;Observer&amp;gt; observes;
+  private static Observable instance;
+  private Observable(){
+     observes = new ArrayList&amp;lt;Observer&amp;gt;();
+  }
+  public static  Observable getInstance(){
+      if(instance == null){
+         instance = new Observable();
+        }
+    return instance；
+  }
+ public void update(Object obj){
+     for(Observer observers: o){
+          o.onUpdate(obj);
+      }
+  }
+ public void registerObserver(Observer observer){
+     observer.add(observer);
+ }
+ public void unRegisterObserver(Observer observer){
+     observer.remove(observer);
+ }
+}
+
+public interface Observer{
+  void onUpdate(Object o);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h3 id=&quot;五命令模式&quot;&gt;五、命令模式&lt;/h3&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//定义命令接口
+public interface Command{
+   void execute();
+}
+
+public class AddCommand{
+   Receiver receiver;
+   public AddCommand(Receiver receiver){
+      this.receiver = receiver;
+   }
+   public void execute(){
+      receiver.doSomething2();
+   }
+}
+
+public class DeleteCommand{
+  Receiver recerver;
+  public DeleteCommand(Recever receiver){
+      this.receiver = receiver;
+ }
+  public void execute(){
+     receiver.doSomething();
+  }
+}
+//定义接收者
+public interface Receiver{
+   public void doSomething();
+}
+
+public class Receiver1 implements Receiver{
+  public void doSomething(){
+    System.out.println(&quot;Receiver1 dosomething&quot;);
+ }
+}
+public class Receiver2 implements Receiver{
+  pubilc void doSomething(){
+    System.out.println(&quot;Receiver2 dosomething&quot;);
+ }
+}
+//定义调用者
+public class Involker{
+  private Command commoand;
+   public setCommand(Command command){
+     this. command = command;
+  }
+  public void action(){
+      command.execute();
+  }
+}
+
+//用户 
+public class Client{
+ public static void main(String[] args){
+    Invoker invoker = new Inverker();
+    Receiver receiver = new Receiver1();
+    Command command = new AddCommand(receiver);
+
+   invoker.setCommand(receiver);
+  invoker.action();
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html">常用设计模式的例子 一、单例模式 单例模式有多种实现，这里使用的是双校验同步锁的方式。这种方式是为了线程安全，为了避免两个线程同时完成空判断而没有实例化，将判断和实例化加上同步锁作为一个原子操作。第一个空判断 是为了防止每次都进入同步块，可大大提升效率。 public class Emperor{ private static Emperor instance; private Emperor(); public static Emperor getInstance(){ if(instance == null){ Synchronized(Emperor.class){ if(instance == null){ instance = new Emperor(); } } } return instance; } }</summary></entry><entry><title type="html">Android数据持久化</title><link href="http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence.html" rel="alternate" type="text/html" title="Android数据持久化" /><published>2018-09-08T19:13:19+08:00</published><updated>2018-09-08T19:13:19+08:00</updated><id>http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence</id><content type="html" xml:base="http://localhost:4000/jekyll/update/2018/09/08/Android-data-persistence.html">&lt;h2 id=&quot;android的数据持久化&quot;&gt;Android的数据持久化&lt;/h2&gt;
 &lt;p&gt;Android数据持久化是Android开发基础知识之一。包括几个方面。所谓数据持久化就是&lt;strong&gt;内存中数据模型转换为存储模型，以及存储模型转为内存数据的统称&lt;/strong&gt;。&lt;/p&gt;
 
 &lt;p&gt;Android数据持久化包括以下几个方面：&lt;/p&gt;
