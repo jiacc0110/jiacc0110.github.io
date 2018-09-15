@@ -199,7 +199,7 @@ public class PlayerInfo{
 ```
 
 ### 七、代理模式
-
+```
 public class Subject{
    void function();
 }
@@ -235,3 +235,4 @@ public class Proxy implements Subject{
   }
 
 }
+```
