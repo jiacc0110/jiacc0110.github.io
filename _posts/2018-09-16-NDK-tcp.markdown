@@ -1,0 +1,175 @@
+---
+layout: post
+title:  "NDK TCP socket"
+date:   2018-09-15 23:13:19 +0800
+categories: jekyll update
+---
+### 一、实现nativeTCP 客户端socket
+ int connect(int socketDescriptor，const struct sockaddr* address,
+   socklen_t addressLength)
+   + socket descriptor:指定应用程序想要连接协议地址的socket实例
+   + 指定socket要连接的协议地址
+   + 指定所提供的地址结构的长度
+```
+ static void ConnectToAddress(
+   JNIEnv* env,
+   jobject obj,
+   int sd,
+   const char* ip,
+   unsigned short port
+   ){
+     struct sockaddr_in address;
+     memset(&address,0,sizeof(address));
+     address.sin_family = PF_INET;
+     //将IP地址字符串转换为网络地址
+     if(0 == inet_aton(ip,&(address.sin_addr)))
+     {
+       //抛异常
+       return;
+     }else{
+       //将IP地址字符串转换为网络地址
+       address.sin_port = htons(port);
+       if(-1 == connect(sd,(const sockaddr*) &address,
+       sizeof(address))){
+         //抛异常
+         return;
+       }else{
+         LogMessage(env,obj,"Connected.");
+       }
+     }
+   }
+```
+
+  ```
+  int clientSocket = NewTcpSocket(env,obj);
+  if(NULL == env->ExceptionOccurred())
+  {
+    const char* ipAddress = env->GetStringUTFChars(ip,NULL);
+    if(NULL == ipAddress)
+     goto exit;
+
+     //连接到IP地址和端口
+     ConnectToAddress(env,obj,clientSocket,ipAddress,(unsigned short) port);
+
+     //释放IP地址
+     env-> ReleaseStringUTFChars(ip,ipAddress);
+
+     //如果连接成功
+     if(NULL != env->ExceptionOccured)
+     go exit;
+
+     //以C字符串形式获取消息
+     const char* messageText = env-> GetStringUTFChars(message,NULL);
+     if(NULL == meeesageText)
+     goto exit;
+      //获取消息大小
+      jsize messageSize  = env ->GetStringUTFLength(message);
+
+      //发送消息给socket
+      SendToSocket(env,obj,clientSocket,messageText,messageSize);
+
+      //释放消息文本
+      env->ReleaseStringUTFChars(message,messageText);
+      //如果发送未成功
+      if(NULL != env->ExceptionOccurred())
+      goto exit;
+       char buffer[MAX_BUFFER_SIZE];
+       //从socket接收
+       ReceiveFromSocket(env,obj,clientSocket,buffer,
+         MAX_BUFFER_SIZE);
+    exit:
+    if(clientSocket >-1){
+      close(clientSocket);
+    }
+  }
+  ```
+
+
+### 二、实现native层TCP Server
+##### 1. 创建一个Socket
+int socket(int domain, int type, int protocol);
++ Domain:指定将会产生通信的socket域，并且选择将用到的协议族。
+> PF_LOCAL:主机内部通信协议族，该协议族使用物理上运行在同一太社保上的应用程序可以用Socket APIs彼此通信。
+>
+PF_INET:Intent协议族，该协议族使应用程序可以与网络上其他地方运行的应用程序进行通信。
++ Type：指定通信的语义，支持一下几种主要的socket类型。
+> SOCK_STREAM:提供使用TCP协议的、面向连接的Stream socket类型。
+>
+SOCK_DGRAM:提供使用UDP协议的、无连接的通信Datagram socket类型。
+
++ Protocol：指定将会用到的协议。零为默认协议。
+
+```
+//若失败 返回-1；
+  int tcpSocket = socket(PF_INET,SOCK_STREAM,0);
+```
+##### 2. 将Socket与地址绑定：bind
+ int bind( int socketDescriptor,const struct sockaddr* address,socklen_t addressLength)
+ + socketDescriptor：socket描述符，指定将绑定到地址的socket实例
+ + address：指定socket被绑定的协议地址
+ + addressLength:指定传递给函数的协议地址结构的大小
+ 不同协议族使用不同的协议地址。PF_INET协议族使用sockaddr_in structure指定协议地址。sockaddr_in结构：
+ ```
+  struct sockaddr_in{
+    sa_family_t sin_family;
+    unsigned short int sin_port;
+    struct in_addr sin_addr;
+  }
+ ```
+
+##### 3.网络字节排序
+在硬件层上，不同机器体系结构使用不同的数据排序和表示规则，这被称为机器**字节排序**或**字节序**。
++ Big-endian 字节顺序首先储存最重要的字节。
++ Little-endian 字节顺序首先存储最不重要的字节。
+
+
+1. ARM和x86机器结构使用little-endian字节排序
+2. MIPS机器结构使用big-endian字节排序
+
+socket提供一组函数，使原生应用程序透明地处理字节排序转换。
+#include <sys/endian.h>
++ htons:将unsigned short从主机字节序转换到网络字节排序。
++ ntohs:与htons相反。
++ htonl:将unsinged integer从主机字节排序转换到网络字节排序。
++ ntohl:和htonl相反。
+
+##### 4.监听进入的连接： listen
+int listen（int socketDescriptor , int backlog);
++ socketDescriptor 指定应用程序想要监听的输入连接socket实例。
++ backlog:指定保存挂起的输入连接的队列大小。
+
+##### 5.接受传入连接: accept
+int accept(int socketDescriptor, struct sockaddr* address, socklen_t* addressLength)
++ socketDiscriptor:
++ address
++ addressLength: 为要填入的连接客户协议地址时提供指定大小的空间。如果不需要该信息，它可以被设置成NULL
+
+##### 6.从socket接收数据：recv
+ssize_t rece(int socketDescription,void* buffer, size_t bufferLength, int flags)
++ socketDiscriptor:
++ buffer pointer: 指向内存地址的指针，该内存用来保存从socket接收的数据。
++ buffer length： 指定缓冲区的大小，recv函数只会向缓冲区中写入该参数指定大小的内容然后返回。
++ flags：指定接收所需要的额外标志。
+
+##### 7.向socket发送数据：send
+ssize_t send(int socketDescriptor,void* buffer,size_t bufferLength,
+  int flags)
+  socketDescriptor:
+  buffer pointer: 指向内存地址的buffer指针，该内存是给定socket发送数据的目的地。
+  buffer length：指定缓冲区的大小。
+  flags：指定发送所需要的额外标志。
+
+##### 8.原生TCP服务器方法
+```
+int serverSocket = NewTCPSocket(env,obj);
+BindSocketToPort(env,obj,serverSocket,(unsigned short)port);
+GetSocketPort(env,obj,serverSocket);
+ListenOnSocket(env,obj,serverSocket,4);
+int clientSocket = AcceptOnSocket(env,obj,serverSocket);
+while(1){
+  recvSize = RecieveFromSocket(env,obj,clientSocket,buffer,MAX_BUFFER_SIZE);
+  sendSize = SendTOSocket(env,obj,clientSocket,buffer,(size_t)recvSize);
+}
+```
+
+### 二、实现native层TCP Client

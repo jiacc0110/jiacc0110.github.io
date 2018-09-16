@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "NDK"
+title:  "NDK Bionic 入门"
 date:   2018-09-15 23:13:19 +0800
 categories: jekyll update
 ---
