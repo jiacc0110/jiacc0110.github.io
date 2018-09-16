@@ -171,5 +171,3 @@ while(1){
   sendSize = SendTOSocket(env,obj,clientSocket,buffer,(size_t)recvSize);
 }
 ```
-
-### 二、实现native层TCP Client
