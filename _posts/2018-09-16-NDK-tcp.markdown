@@ -3,6 +3,7 @@ layout: post
 title:  "NDK TCP socket"
 date:   2018-09-15 23:13:19 +0800
 categories: jekyll update
+tags: NDK
 ---
 ### 一、实现nativeTCP 客户端socket
  int connect(int socketDescriptor，const struct sockaddr* address,

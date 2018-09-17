@@ -3,6 +3,7 @@ layout: post
 title:  "Android数据持久化"
 date:   2018-09-08 19:13:19 +0800
 categories: jekyll update
+tags: Android基础
 ---
 Android的数据持久化
 ---

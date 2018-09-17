@@ -3,6 +3,7 @@ layout: post
 title:  "常用设计模式的例子"
 date:   2018-09-14 00:13:19 +0800
 categories: jekyll update
+tags: 设计模式
 ---
 常用设计模式的例子
 ---

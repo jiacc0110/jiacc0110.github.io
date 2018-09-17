@@ -3,6 +3,7 @@ layout: post
 title:  "NDK Bionic 入门"
 date:   2018-09-15 23:13:19 +0800
 categories: jekyll update
+tags: NDK
 ---
 Bionic 是Android平台为C和C++进行原生应用开发所提供的POSIX标准C库。
 
