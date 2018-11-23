@@ -54,4 +54,45 @@ class MyPlugin extends implements Plugin<Project>{
 
 ####3.上传插件
 
+上传插件就是在这个Module的build.gradle中写Task了，看下代码,我就上传到工程目录的平级目录中的repo目录下了
+```
+apply plugin: 'maven'
+group = 'com.jiacc.test'
+version = '1.0.0'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            //本地的Maven地址设置为D:/repos
+            repository(url: uri('../repo'))
+        }
+    }
+}
+
+```
+执行gradle uploadArchives 命令，就可以上传到repo仓库，若要上传到远程仓库，
+则将uri配置到远程maven仓库地址。
 ####4.使用插件
+
+首先在要使用这个插件的app目录下的build.gradle中添加下面代码:
+
+1.apply plugin的名字就是上面我们在resources中定义的properties文件的文件名;
+2.maven仓库就是我们上面的仓库地址;
+3.就是添加依赖，其中com.juexingzhe.mobile就是group,juexingzhe就是上面插件工程的工程名，1.0.0就是版本号了，group和version都是在上面的gradle中定义了，module没定义就默认使用工程名了。
+。
+```
+apply plugin: 'com.jiacc.test'
+
+buildscript {
+    repositories {
+        maven {
+            url uri('E:/code/repo')
+        }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.jiacc.test:MyPlugin:1.0.0'
+    }
+}
+```
