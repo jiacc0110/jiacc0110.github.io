@@ -1,0 +1,161 @@
+---
+layout: post
+title:  "aapt2学习"
+date:   2018-03-29 16:43:19 +0800
+categories: jekyll update
+tags: Android构建
+---
+aapt2学习
+---
+
+##AAPT2
+AAPT2 是一个构建工具，AndroidStudio和Android Gradle Plugin用它来编译和打包你的资源。APPT2 把资源解析、索引、编译优化Android平台下的二进制格式。
+
+Android Gradle Plugin 3.0.0 或者更高默认使用AAPT2，开发者不用自己去调用。如果你习惯使用自己的终端或自己的构建系统而不使用Android Studio，你可以用命令行使用AAPT2.你可以在Android SDK Build tools 26.0.2或更高的版本中找到AAPT2.
+
+使用sdkmananger并运行命令行 sdkmanager "build-tools;build-tools-version"来下载Android SDK Build Tools。
+
+如果你已经下载了SDK Build Tools，你可以从本地"android_sdk/build-tools/version/"找到AAPT2.因为新版本的Android SDK Build Tools并不是频繁发版，你的SDK中的AAPT2可能不算最新版本。去下载最新版本的AAPT2，获取最新的AAPT2，阅读“Downlad AAPT2 from Google Maven”.
+
+在Linux或Mac上使用命令行，执行aapt2 命令。在Windows上运行aapt2.exe命令。AAPT2支持更快速的增量编译。实现它的方式是将资源进程分为两步：
+1.编译：编译资源文件成二进制格式。
+2.链接：合并所有的编译文件并将它们打进一个包中。
+这中分割帮助提升增量构建的效果。例如，如果你只需要改变单个文件，那么你只需要重新编译这个文件就好。
+
+
+###从Google Maven下载AAPT2
+
+略
+
+###编译
+ AAPT2 支持编译所有的Android资源类型，如drawable、XML文件等。当你调用AAPT2编译时，你避免每次调用单个资源文件作为输入。AAPT2会解析文件生成.falt为后缀的二进制中间件。
+尽管你可以使用文件夹处理来包含多个资源，使用--dir,但是这么做不能达到增量编译效果。如果文件夹中只改变一个文件，AAPT2依然会重新编译整个文件夹。
+
+文件输出类型：
+| input | output|
+|XML resource files, such as String and Style, which are located in the res/values/ directory.|Resource table with *.asrc.flat as its extension.
+|All other resource files.|All files other than the files under res/values/ directory are converted to binary XML files with *.flat extensions. Additionally all PNG files are crunched by default and adopt *.png.flat extensions. If you choose not to compress PNGs, you can use the --no-crunch option during compilation.
+
+
+AAPT2输出文件不可能直接运行，你必须将这些二进制文件作为输入并链接到生成的的apk中。然而，生成APK文件也不是可执行的，你可以在Android设备上安装它但是不能运行，因为它不包含DEX文件也没有签名。
+
+####编译语法
+
+> aapt2 compile path-to-input-files [options] -o output-directory/
+
+> ** 提示：对于资源文件，输入文件必须符合如下结构 path/resource-type[-config]/file **
+
+下面的例子，AAPT2编译资源名为values.xml和myImage.png 分别为：
+
+> aapt2 compile project_root/module_root/src/main/res/values-en/ strings.xml -o compiled/
+> aapt2 compile project_root/module_root/src/main/res/drawable/ myImage.png -o compiled/
+
+如上所示，输出的名字依赖于输入名字和父文件夹。例如，string.xml 作为input，aapt2自动命名输出文件 values-en_strings.arsc.flat.另一方面，drawable文件的编译结果存储为 drawable_img.png.flat
+
+
+####编译设置(参数)
+有许多编译命令可以使用，如下所示
+
+-o path   编译资源的特殊输出路径
+--dir directory   输入资源的文件夹。
+--pseudo-localize 生成 pseudo-localized 默认string版本，如en-XA en-XB
+--no-crunch  不处理PNG。如果你已经使用PNG图片，或者你创建了debug构建不需要缩减体积。设置这个命令可以执行更快，但是体积更大。
+--legacy 对待早期AAPT版本作为warnings的Errors，设置为允许。 
+-v  允许输出log
+
+
+###链接
+ AAPT2合并所有的中间想生成 tables 二进制XML文件 压缩过的PNG文件，打包成单个的APK。另外，其他附加文件如R.java和Rroguard规则文件可以在这个过程中被生成。然而，生成的APK不包括DEX字节码也没有被签名，不能被安装到游戏。如果你没有使用Android Gradle Plugin，使用命令行构建app，你可以使用其他命令行工具，如d8来编译java字节码文件为DEX字节码文件，使用apksigner来构建APK。
+
+####链接语法
+语法如下：
+appt2 link path-to-input-files [options] -o outputdirectory/outputfilename.apk --manifest AndroidManifest.xml
+在下面的例子中，AAPT2合并两个中间文件 -drawable_image.flat 和 values_values.arsc.flat,和AndroidManifest.xml文件 与android.jar文件的链接结果，其持有的资源被定义在Android包中。
+
+> aapt2 link -o output.apk 
+    -I android_sdk/platforms/android)version/android.jar
+    compiled/res/values_values.arsc.flat
+    compiled/res/drawable_Image.flat --manifest /path/to/AndroidManifest.xml -v
+
+#####链接设置
+你可以使用如下的设置link命令:
+-o path 指定资源APK的输出路径
+--manifest file 指定要构建的Android manifest路径。 
+                这是个必要的标志因为manifst里面包含一些必要信息，如包名、applicationId。
+-I 为android.jar或其他APK如 framewrok-res.apk 提供有用的构建文件。
+                 这是个必要的标志位，如果在android 命名空间属性（如 android：id）在你的资源文件中。
+-A directory 为APK指定一个assets文件夹。
+-R file 遍历单独的.flat文件去链接，使用overlay词去掉使用<add-resource>标签
+        当你提供的资源文件overlays一个存在的文件时，使用最后一个文件
+
+--package-id package-id 为你的apk指定包名的ID
+                        指定的包名ID必须
+
+--allow-reserved-package-id  允许使用reserved package id
+                             reserved package ids 一般赋值给分享库，范围包括0x02到0x7e。通过使用--allow-reserved-package-                             id，可以复制reserved id。
+                            只能在 minsdk version为26或者更低。
+--java directory             指定R.java输出文件夹
+--proguard proguard_options  生成混淆规则文件
+--no-auto-version            禁用自动style和layout的SDKversion
+--no-version-verctors        禁止自动style和layout SDK版本
+--no-version-transitions     禁止自动变换资源版本。只有在使用Transition Support library构建APK时使用它。	
+--no-resource-deduping       禁止自动删除资源的重复数据，当使用同一值时兼容配置。
+--enable-sparse-encoding     允许少量编码使用二叉搜索树。对APK体积优化有益，但是需要检测行为。
+-z                           需要本地strings标记为suggested.
+-c config                    
+--preferred-density density
+--output-to-dir
+--min-sdk-version   min-sdk-version       设置AndroidManifest.xml的min version。           
+--target-sdk-version target-sdk-version   设置AndroidManifest.xml的target version.
+--version-code version-code               设置AndroidManifest.xml的版本
+--compile-sdk-version-name compile-sdk-version-name  
+--proto-format                
+--non-final-ids               设置R.java 不带final的资源id
+--emit-ids path               
+--stable-ids outputfilename.ext
+--custom-package package_name     生成不同包名的相同R.java
+--extra-packages package_name
+--add-javadoc-annotation annotation
+--output-text-symbols path 输出一个text文件包含R的class文件中的资源标识
+--auto-add-overlay 允许添加新的资源，在不使用<add-resource>标签的情况下
+--rename-manifest-package manifest-package 重命名 AndroidManfiest.xml里的package
+--rename-instrumentation-target-package instrumentation- target-package 
+-0 extension
+--split path:config[,config[..]]
+-v
+
+###dump
+dump 用来打印资源和manifest信息的从命令行中。
+
+--no-values
+--file file 指定文件打印dump apk
+-v 增加冗余输出
+
+
+### aapt2的行为变化
+AAPT为AAPT2早期的默认版本，现在已经废弃。
+因为AAPT2应该被立即应用到旧工程中，这里描述一些需要注意的行为变化。
+
+####Android manifest中的元素等级
+在早期的AAPT中，元素嵌套错误会被忽略或者报warning.
+AAPT2 会返回error:
+>AndroidManifest.xml:15: error: unknown element <action> found.
+
+####资源的声明
+ 不再允许在name属性中标识资源。
+> <style name="foo" parent"bar">
+        <item name="attr/my_attr">@color/pink</item>
+  </style>
+
+声明资源类型的方式会报错：
+> Error:style attribute 'attr/attr/my_attr (aka my.package:attr/attr/my_attr)' not fouond.
+
+为了解决这个问题，需要明确的声明type
+> <style name= "foo" parent="bar">
+     <item type = "attr" name = "my_attr">@color/pink</item>
+  </style>
+
+另外，如果声明了<style>元素，它的父元素也必须是style资源类型。否则会报一样的错
+> Error:(...) invalid resource type 'attr' for parent of style
+
+###Android
